@@ -1,0 +1,30 @@
+dataset:
+  # Portable public-repository default; keep the actual dataset outside Git.
+  root_dir: "data/raw/quartets"
+  audio_ext: ".flac"
+  kern_ext: ".krn"
+  metadata_ext: ".krn"
+
+output:
+  manifest_dir: "data/manifests"
+  oracle_events_dir: "data/oracle_events"
+  reports_dir: "data/reports"
+
+split:
+  strategy: "by_composer_or_existing"
+  train_ratio: 0.8
+  valid_ratio: 0.1
+  test_ratio: 0.1
+  seed: 42
+
+audio:
+  sample_rate: 22050
+  max_duration_sec: 30.0
+
+kern:
+  expected_spines: 4
+  expected_voices:
+    - violin_1
+    - violin_2
+    - viola
+    - cello

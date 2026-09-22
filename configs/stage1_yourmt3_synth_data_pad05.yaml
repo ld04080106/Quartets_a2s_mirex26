@@ -1,0 +1,29 @@
+# Selected synthetic-audio recipe for quartet-specific YourMT3 fine-tuning.
+dataset:
+  manifest_dir: "data/manifests_dedup"
+  oracle_events_dir: "data/oracle_events"
+
+audio:
+  sample_rate: 16000
+
+synthetic:
+  out_dir: "data/synthetic_quartets_pad05"
+  manifest_dir: "data/manifests_synth_pad05"
+  splits:
+    - train
+    - valid
+  variants_per_sample: 1
+  base_tempo_bpm: 120.0
+  tempo_jitter_pct: 0.06
+  leading_silence_sec: 0.5
+  velocity_jitter: 10
+  random_seed: 42
+  keep_wav: false
+  soundfonts:
+    - "soundfonts/default.sf2"
+  fluidsynth_cmd: "fluidsynth"
+  ffmpeg_cmd: "ffmpeg"
+  fluidsynth_gain: 0.7
+
+output:
+  reports_dir: "data/reports"

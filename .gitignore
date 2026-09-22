@@ -1,0 +1,43 @@
+# Python build/test artifacts
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Local environments and editor state
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Datasets, generated manifests, model assets, and experiment outputs
+# None of these belong in the public source repository.
+/data/
+/outputs/
+/transfer/
+/hpc_assets/
+/internal_eval/
+/soundfonts/*.sf2
+*.ckpt
+*.pt
+*.pth
+*.pkl
+*.tar
+*.tar.gz
+*.zip
+
+# Runtime logs and temporary files
+*.log
+failed_samples.csv
+model_output/
+wandb/
+lightning_logs/

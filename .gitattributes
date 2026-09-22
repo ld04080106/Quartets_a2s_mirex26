@@ -1,0 +1,20 @@
+* text=auto
+
+# Cluster entry points must stay LF even when the repository is prepared on Windows.
+*.sh text eol=lf
+*.sbatch text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.krn text eol=lf
+
+# Model/data artifacts are binary if they are ever attached to a release.
+*.ckpt binary
+*.pt binary
+*.pth binary
+*.pkl binary
+*.sf2 binary
+*.mid binary
+*.flac binary
+

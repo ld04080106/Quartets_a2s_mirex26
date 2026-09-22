@@ -1,0 +1,44 @@
+# Selected 4xH800 YourMT3 fine-tuning recipe. Pitch shifting is disabled because
+# earlier diagnostics showed that it can introduce a systematic semitone error.
+stage1:
+  backend: yourmt3
+  external_train_command: "bash hpc/stage1/task_yourmt3_finetune.sh configs/stage1_yourmt3_synth_finetune_h800_4gpu_pad05_nops.yaml"
+
+yourmt3:
+  source_dir: "${YOURMT3_SOURCE_DIR}"
+  data_home: "data/yourmt3_synth_pad05_data"
+  prepared_dir: "data/yourmt3_synth_pad05_quartets"
+  pretrained_checkpoint: "${YOURMT3_SOURCE_DIR}/amt/logs/2024/mc13_256_g4_all_v7_mt3f_sqr_rms_moe_wf4_n8k2_silu_rope_rp_b36_nops/checkpoints/last.ckpt"
+
+data:
+  manifest_dir: "data/manifests_synth_pad05"
+  oracle_events_dir: "data/oracle_events"
+  default_tempo_bpm: 120.0
+  prepare_jobs: 8
+
+audio:
+  sample_rate: 16000
+
+train:
+  project: "2026_quartets"
+  experiment_id: "quartets_yptf_synth_finetune_h800_4gpu_pad05_nops_v1"
+  num_gpus: 4
+  strategy: "ddp"
+  precision: "bf16-mixed"
+  sub_batch_size: 1
+  local_batch_size: 1
+  validation_batch_size: 13
+  samples_per_epoch: 24336
+  max_steps: 3000
+  val_interval_steps: 500
+  learning_rate: 0.00003
+  optimizer: "AdamWScale"
+  scheduler: "cosine"
+  amplitude_min: 0.8
+  amplitude_max: 1.1
+  pitch_shift_min: 0
+  pitch_shift_max: 0
+
+output:
+  reports_dir: "data/reports"
+  launch_report: "outputs/yourmt3_synth_finetune_h800_4gpu_pad05_nops/launch.json"

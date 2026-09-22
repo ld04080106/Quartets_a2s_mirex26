@@ -1,0 +1,47 @@
+# Final Stage 2 recipe: real Stage 1 + learned-voice predictions are source;
+# oracle events parsed from **kern are target. No synthetic fallback is allowed.
+data:
+  manifest_dir: data/manifests_dedup
+  oracle_dir: data/oracle_events
+  prepared_dir: outputs/stage2_midi_pred_events_data
+  reports_dir: outputs/stage2_midi_pred_events_data/reports
+  source_midi_dir: outputs/stage2_midi_pred_events_data/source_midi
+  target_midi_dir: outputs/stage2_midi_pred_events_data/target_midi
+  splits:
+    - train
+    - valid
+  pred_events_dir_template: outputs/stage1_yourmt3_synth_finetuned_pad05_nops_{split}_voice_model/events
+  train_jsonl: outputs/stage2_midi_pred_events_data/train.jsonl
+  valid_jsonl: outputs/stage2_midi_pred_events_data/valid.jsonl
+  subdivisions_per_beat: 24
+  default_tempo_bpm: 120.0
+  max_input_tokens: 3072
+  max_output_tokens: 3072
+
+model:
+  d_model: 256
+  nhead: 8
+  layers: 6
+  dropout: 0.12
+  dim_feedforward: 1024
+  max_length: 3072
+
+training:
+  seed: 2027
+  device: cuda
+  batch_size: 1
+  grad_accum_steps: 8
+  epochs: 35
+  learning_rate: 0.00022
+  weight_decay: 0.01
+  scheduler: linear_warmup_cosine
+  warmup_ratio: 0.06
+  min_lr_ratio: 0.05
+  label_smoothing: 0.03
+  amp: true
+  grad_clip_norm: 1.0
+  early_stop_patience: 7
+  early_stop_min_delta: 0.0002
+  save_every_epoch: true
+  output_dir: outputs/stage2_midi_pred_events_long_model_v2
+  log_file: outputs/stage2_midi_pred_events_long_model_v2/train.log

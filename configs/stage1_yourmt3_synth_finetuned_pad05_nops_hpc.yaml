@@ -1,0 +1,19 @@
+# Inference config matching the selected pad05+nops checkpoint exactly.
+hpc_stage1:
+  backend: yourmt3
+  source_dir: "${YOURMT3_SOURCE_DIR}"
+  model_name: quartets_yptf_synth_finetune_h800_4gpu_pad05_nops_v1
+  checkpoint_path: "amt/logs/2026_quartets/quartets_yptf_synth_finetune_h800_4gpu_pad05_nops_v1/checkpoints/last.ckpt"
+  precision: "bf16-mixed"
+  device: cuda
+  inference_batch_size: 1
+  leading_silence_sec: 0.5
+
+postprocess:
+  assign_unknown_voices: true
+  min_confidence: 0.0
+  transpose_semitones: 0
+
+evaluation:
+  onset_tolerance_sec: 0.05
+  offset_tolerance_sec: 0.10

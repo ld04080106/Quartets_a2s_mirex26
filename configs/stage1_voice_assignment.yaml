@@ -1,0 +1,29 @@
+# Final learned voice model: match YourMT3 predictions to oracle notes, then
+# classify each note as violin_1, violin_2, viola, or cello.
+data:
+  train_pred_dir: "outputs/stage1_yourmt3_synth_finetuned_pad05_nops_train/events"
+  valid_pred_dir: "outputs/stage1_yourmt3_synth_finetuned_pad05_nops_valid/events"
+  oracle_train_dir: "data/oracle_events/train"
+  oracle_valid_dir: "data/oracle_events/valid"
+
+model:
+  out_path: "outputs/voice_assignment/model.pkl"
+  type: "hist_gradient_boosting"
+  max_iter: 250
+  learning_rate: 0.08
+  max_leaf_nodes: 31
+  l2_regularization: 0.0
+  random_seed: 42
+
+features:
+  onset_group_sec: 0.04
+
+matching:
+  onset_tolerance_sec: 0.05
+  offset_tolerance_sec: 0.10
+
+decode:
+  constrained_onsets: true
+
+output:
+  reports_dir: "outputs/voice_assignment"

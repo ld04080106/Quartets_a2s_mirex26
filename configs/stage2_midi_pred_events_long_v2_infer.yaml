@@ -1,0 +1,17 @@
+# Selected long-v2 MIDI-to-MIDI checkpoint. The disabled quality gate records
+# the decision to trust neural output unless inference itself raises an error.
+stage2_midi:
+  checkpoint: outputs/stage2_midi_pred_events_long_model_v2/best.pt
+  device: cuda
+  subdivisions_per_beat: 24
+  max_decode_tokens: 3072
+  quality_gate:
+    enabled: false
+
+stage2:
+  default_tempo_bpm: 120.0
+  quantization:
+    subdivisions_per_beat: 4
+  alignment:
+    tolerance_beat: 0.12
+    max_cluster_span_beat: 0.20
