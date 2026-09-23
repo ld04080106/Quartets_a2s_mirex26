@@ -3,7 +3,13 @@
 Only YourMT3 is maintained. All commands are run from the repository root and all paths
 are repository-relative, so the checkout can move between local Windows storage and HPC.
 
-## Offline source transfer
+## Pinned source
+
+The tested, code-only Space snapshot is committed at `third_party/YourMT3`.
+Normal training and inference do not download or update it. See
+`third_party/YourMT3/UPSTREAM.md` for its exact revision and local patches.
+
+## Refreshing or transferring the source
 
 On a machine with internet access, either download the Space directly with
 `download_yourmt3.sh` or create a transferable archive:
@@ -22,9 +28,9 @@ Transfer both the archive and `.sha256` file. On the cluster:
 ```bash
 python hpc/stage1/import_yourmt3_bundle.py \
   --bundle transfer/YourMT3_bundle.tar.gz \
-  --source_dir hpc_assets/stage1/sources/YourMT3
+  --source_dir third_party/YourMT3
 
-export YOURMT3_SOURCE_DIR=hpc_assets/stage1/sources/YourMT3
+export YOURMT3_SOURCE_DIR=third_party/YourMT3
 ```
 
 `deploy_yourmt3.sh` creates or reuses the runtime environment and deliberately

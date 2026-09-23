@@ -30,7 +30,7 @@ else
 fi
 
 cd "$PROJECT_DIR"
-export YOURMT3_SOURCE_DIR="${YOURMT3_SOURCE_DIR:-hpc_assets/stage1/sources/YourMT3}"
+export YOURMT3_SOURCE_DIR="${YOURMT3_SOURCE_DIR:-third_party/YourMT3}"
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 mkdir -p "$OUTPUT_ROOT/events" "$OUTPUT_ROOT/midi" "$OUTPUT_ROOT/metrics"
 

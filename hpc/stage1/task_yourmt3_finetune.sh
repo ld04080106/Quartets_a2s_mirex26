@@ -33,7 +33,7 @@ LOG="outputs/yourmt3_finetune_logs/task_${STAMP}.log"
     conda activate yourmt3
   fi
 
-  export YOURMT3_SOURCE_DIR="${YOURMT3_SOURCE_DIR:-hpc_assets/stage1/sources/YourMT3}"
+  export YOURMT3_SOURCE_DIR="${YOURMT3_SOURCE_DIR:-third_party/YourMT3}"
   export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
   export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
   export WANDB_MODE="${WANDB_MODE:-disabled}"

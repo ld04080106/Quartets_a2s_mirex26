@@ -29,6 +29,7 @@ hpc/stage1/           YourMT3 offline deployment, fine-tuning and inference
 hpc/stage2/           predicted-event data preparation and MIDI correction training
 hpc/submission/       submission build and dry-run helpers
 scripts/              data, training, evaluation and packaging entry points
+third_party/YourMT3/  pinned, code-only YourMT3 Space snapshot
 tests/                 unit tests for parsing, events, voices and **kern validity
 ```
 
@@ -49,7 +50,8 @@ python -m pytest -q
 
 Competition inference needs Python 3.11, one CUDA GPU, and the dependencies in
 `requirements_submission.txt`. Install the PyTorch/Torchaudio pair matching the host
-CUDA runtime first. YourMT3 itself is an external dependency and is not vendored in Git.
+CUDA runtime first. The exact YourMT3 code snapshot used by this system is pinned under
+`third_party/YourMT3`; model checkpoints remain external assets.
 
 ## 1. Dataset and oracle events
 
@@ -87,7 +89,7 @@ checkpoint is evaluated with:
 
 ```bash
 export YOURMT3_ENV_PREFIX=yourmt3
-export YOURMT3_SOURCE_DIR=hpc_assets/stage1/sources/YourMT3
+export YOURMT3_SOURCE_DIR=third_party/YourMT3
 bash hpc/stage1/run_yourmt3_synth_finetuned_nops_eval.sh valid
 ```
 
@@ -128,9 +130,27 @@ Required local assets are declared in `configs/pipeline_submission.yaml`:
 - `outputs/voice_assignment/model.pkl`;
 - `outputs/stage2_midi_pred_events_long_model_v2/best.pt`.
 
+The final config contains immutable public OSS URLs and verified SHA-256 values.
+The following optional environment variables override those defaults when
+mirroring the assets elsewhere:
+
+```bash
+export A2S_STAGE1_CHECKPOINT_URL=https://MIRROR/PATH/yourmt3.ckpt
+export A2S_STAGE1_CHECKPOINT_SHA256=SHA256_OF_MIRRORED_FILE
+export A2S_VOICE_MODEL_URL=https://MIRROR/PATH/voice_assignment.pkl
+export A2S_VOICE_MODEL_SHA256=SHA256_OF_MIRRORED_FILE
+export A2S_STAGE2_CHECKPOINT_URL=https://MIRROR/PATH/stage2_best.pt
+export A2S_STAGE2_CHECKPOINT_SHA256=SHA256_OF_MIRRORED_FILE
+```
+
+`transcription.sh` checks local files first, downloads only missing assets to a
+temporary file, verifies SHA-256, and atomically installs them. Use
+`A2S_ASSET_BEARER_TOKEN` only at runtime if the server requires authentication.
+
 Validate and build:
 
 ```bash
+python scripts/ensure_model_assets.py --config configs/pipeline_submission.yaml
 python scripts/check_submission_assets.py --config configs/pipeline_submission.yaml
 bash hpc/submission/build_submission.sh
 ```
@@ -162,7 +182,7 @@ data/manifests_dedup/
 data/oracle_events/
 data/synthetic_quartets_pad05/
 data/yourmt3_synth_pad05_quartets/
-hpc_assets/stage1/sources/YourMT3/
+third_party/YourMT3/amt/logs/                 # local checkpoints; ignored by Git
 outputs/voice_assignment/model.pkl
 outputs/stage2_midi_pred_events_data/{train,valid}.jsonl
 outputs/stage2_midi_pred_events_long_model_v2/best.pt

@@ -53,6 +53,6 @@ intentionally not guessed.
   used by the deployment script and the Hugging Face model repository each
   declare Apache-2.0 in repository metadata. These upstream declarations are
   recorded separately because they differ; see `THIRD_PARTY_NOTICES.md`.
-- External YourMT3 files and checkpoints retain their upstream terms and are
-  not relicensed under MIT. Confirm the applicable grant for the exact bundled
-  snapshot before public redistribution.
+- Vendored YourMT3 files under `third_party/YourMT3` and external checkpoints
+  retain their upstream terms and are not relicensed under MIT. The exact Space
+  revision and local patches are recorded in `third_party/YourMT3/UPSTREAM.md`.

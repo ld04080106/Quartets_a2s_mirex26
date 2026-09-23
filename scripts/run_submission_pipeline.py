@@ -151,7 +151,7 @@ def _load_yourmt3(config: dict[str, Any]):
     sys.path.insert(0, str(PROJECT_ROOT / "hpc" / "stage1"))
     from adapters.yourmt3 import YourMT3
 
-    source_dir = _path(deep_get(config, "stage1.source_dir", "hpc_assets/stage1/sources/YourMT3"))
+    source_dir = _path(deep_get(config, "stage1.source_dir", "third_party/YourMT3"))
     checkpoint = deep_get(config, "stage1.checkpoint_path", None)
     precision = str(deep_get(config, "stage1.precision", "auto"))
     if precision == "auto":

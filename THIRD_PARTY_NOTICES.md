@@ -6,9 +6,10 @@ datasets, SoundFonts, or other external assets.
 
 ## YourMT3
 
-This project can load an external YourMT3 snapshot and checkpoint. Those files
-are not part of the Git repository and retain their upstream licenses and
-copyright notices.
+This repository vendors a code-only YourMT3 Hugging Face Space snapshot under
+`third_party/YourMT3`. It retains its upstream copyright headers and is not
+covered by this project's MIT License. YourMT3 checkpoints remain external
+assets and retain their upstream terms.
 
 - The [YourMT3 GitHub source repository](https://github.com/mimbres/YourMT3)
   contains a GNU General Public License, version 3 (`GPL-3.0`) license file.
@@ -19,12 +20,11 @@ copyright notices.
   also declares `apache-2.0` in its model-card metadata.
 
 The GitHub code license and Hugging Face metadata are therefore not identical.
-The bundling scripts record which Hugging Face repository type and revision was
-downloaded, preserve upstream files, and do not claim that the MIT license
-applies to those files. Before redistributing a package that contains YourMT3
-code or weights, confirm with the upstream maintainer or competition organizer
-which license grant governs the exact snapshot being distributed and satisfy
-all applicable notice and source-distribution requirements.
+`third_party/YourMT3/UPSTREAM.md` records the exact Space revision and local
+patches. The project does not claim that its MIT License applies to those files.
+Before redistributing a package containing YourMT3 code or weights, confirm with
+the upstream maintainer or competition organizer which license grant governs the
+exact snapshot and satisfy all applicable notice and source requirements.
 
 ## Other external assets
 

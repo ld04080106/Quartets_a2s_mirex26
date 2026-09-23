@@ -26,7 +26,14 @@ Thumbs.db
 /transfer/
 /hpc_assets/
 /internal_eval/
+/submit_models/
 /soundfonts/*.sf2
+/third_party/YourMT3/amt/logs/
+/third_party/YourMT3/.cache/
+/third_party/YourMT3/amt/src/extras/
+/third_party/YourMT3/amt/src/tests/
+/third_party/YourMT3/amt/src/utils/preprocess/preprocess_rnsynth.py
+*.a2s_original
 *.ckpt
 *.pt
 *.pth

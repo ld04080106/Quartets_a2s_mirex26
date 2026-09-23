@@ -14,6 +14,16 @@ mkdir -p "$OUTPUT_KERN_DIR/logs"
 PYTHON_BIN="${A2S_PYTHON:-python}"
 CONFIG_PATH="${A2S_SUBMISSION_CONFIG:-$PROJECT_DIR/configs/pipeline_submission.yaml}"
 
+"$PYTHON_BIN" "$PROJECT_DIR/scripts/ensure_model_assets.py" \
+  --config "$CONFIG_PATH" \
+  --out_json "$OUTPUT_KERN_DIR/logs/assets.json" \
+  >>"$OUTPUT_KERN_DIR/logs/launcher.log" 2>&1
+ASSET_STATUS=$?
+if [ "$ASSET_STATUS" -ne 0 ]; then
+  echo "Model asset preparation failed; see logs/assets.json and logs/launcher.log" >&2
+  exit "$ASSET_STATUS"
+fi
+
 "$PYTHON_BIN" "$PROJECT_DIR/scripts/check_submission_assets.py" \
   --config "$CONFIG_PATH" \
   --out_json "$OUTPUT_KERN_DIR/logs/preflight.json" \

@@ -6,11 +6,18 @@ submission:
   audio_exts: [".flac", ".wav"]
   required_components: [stage1, voice_assignment, stage2_midi]
 
+asset_download:
+  enabled: true
+  timeout_sec: 120
+  retries: 3
+
 stage1:
   backend: yourmt3
-  source_dir: "${YOURMT3_SOURCE_DIR:-hpc_assets/stage1/sources/YourMT3}"
+  source_dir: "${YOURMT3_SOURCE_DIR:-third_party/YourMT3}"
   model_name: quartets_yptf_synth_finetune_h800_4gpu_pad05_nops_v1
   checkpoint_path: "amt/logs/2026_quartets/quartets_yptf_synth_finetune_h800_4gpu_pad05_nops_v1/checkpoints/last.ckpt"
+  checkpoint_url: "${A2S_STAGE1_CHECKPOINT_URL:-https://ccomai.oss-cn-beijing.aliyuncs.com/ccomai/a2s/yourmt3_quartet_pad05_nops_v1.ckpt}"
+  checkpoint_sha256: "${A2S_STAGE1_CHECKPOINT_SHA256:-3f36eaa5056fb85704c1f5cff1b96a274507225ec010aa7a24ef8080b4559f28}"
   # Selects bf16 on H800/A100 and fp16 on V100/2080Ti-class hardware.
   precision: "auto"
   device: cuda
@@ -22,10 +29,14 @@ stage1:
 voice_assignment:
   enabled: true
   model_path: outputs/voice_assignment/model.pkl
+  model_url: "${A2S_VOICE_MODEL_URL:-https://ccomai.oss-cn-beijing.aliyuncs.com/ccomai/a2s/voice_assignment_model.pkl}"
+  model_sha256: "${A2S_VOICE_MODEL_SHA256:-32b78c25f128aae09b7de6c45295349615055f14e97786c7c7a2b9aced3a0978}"
 
 stage2_midi:
   enabled: true
   checkpoint: outputs/stage2_midi_pred_events_long_model_v2/best.pt
+  checkpoint_url: "${A2S_STAGE2_CHECKPOINT_URL:-https://ccomai.oss-cn-beijing.aliyuncs.com/ccomai/a2s/stage2_midi_long_v2_best.pt}"
+  checkpoint_sha256: "${A2S_STAGE2_CHECKPOINT_SHA256:-e7cc8ad51c807fb921d76068838e19d0422e21004da1302a2dbc1dd09ce06d85}"
   device: cuda
   subdivisions_per_beat: 24
   max_decode_tokens: 3072

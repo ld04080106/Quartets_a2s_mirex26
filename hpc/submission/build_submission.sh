@@ -7,6 +7,8 @@ OUTPUT_BASE="${1:-$PROJECT_DIR/outputs/mirex2026_a2s_submission}"
 PYTHON_BIN="${A2S_PYTHON:-python}"
 cd "$PROJECT_DIR"
 
+"$PYTHON_BIN" scripts/ensure_model_assets.py \
+  --config configs/pipeline_submission.yaml
 "$PYTHON_BIN" scripts/check_submission_assets.py \
   --config configs/pipeline_submission.yaml
 "$PYTHON_BIN" scripts/package_submission.py \

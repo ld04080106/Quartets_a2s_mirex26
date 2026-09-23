@@ -27,15 +27,14 @@ def _path(project: Path, value: str) -> Path:
 
 def _resolve_yourmt3_source(project: Path, value: str | None) -> Path:
     tried: list[Path] = []
-    raw = value or "hpc_assets/stage1/sources/YourMT3"
+    raw = value or "third_party/YourMT3"
     primary = _path(project, raw)
     candidates = [primary]
     if primary.name == "YourMT":
         candidates.append(primary.with_name("YourMT3"))
-    candidates.append((project / "hpc_assets" / "stage1" / "sources" / "YourMT3").resolve())
     env_value = os.environ.get("YOURMT3_SOURCE_DIR")
     if env_value:
-        candidates.append(_path(project, env_value))
+        candidates.insert(0, _path(project, env_value))
     for candidate in candidates:
         if candidate in tried:
             continue
@@ -95,7 +94,7 @@ def main() -> None:
     config = load_config(args.config)
     source_dir = _resolve_yourmt3_source(
         project,
-        args.source_dir or deep_get(config, "yourmt3.source_dir", "hpc_assets/stage1/sources/YourMT3"),
+        args.source_dir or deep_get(config, "yourmt3.source_dir", "third_party/YourMT3"),
     )
     source_python = source_dir / "amt" / "src"
     if not (source_python / "utils" / "note_event_dataclasses.py").exists():

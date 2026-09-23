@@ -29,7 +29,7 @@ def _latest_checkpoint(source_dir: Path, experiment_id: str | None) -> Path:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Copy latest YourMT3 Lightning checkpoint into amt/logs/<project>/<experiment>/checkpoints/last.ckpt.")
-    parser.add_argument("--source_dir", default=os.environ.get("YOURMT3_SOURCE_DIR", "hpc_assets/stage1/sources/YourMT3"))
+    parser.add_argument("--source_dir", default=os.environ.get("YOURMT3_SOURCE_DIR", "third_party/YourMT3"))
     parser.add_argument("--project", default="2026_quartets")
     parser.add_argument("--experiment_id", required=True)
     parser.add_argument("--checkpoint_name", default="last.ckpt")

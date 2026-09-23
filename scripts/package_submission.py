@@ -52,6 +52,7 @@ RUNTIME_FILES = (
     "scripts/_bootstrap.py",
     "scripts/check_submission_assets.py",
     "scripts/check_submission_outputs.py",
+    "scripts/ensure_model_assets.py",
     "scripts/package_precomputed_kern.py",
     "scripts/run_submission_pipeline.py",
     "hpc/stage1/adapters/yourmt3.py",
@@ -66,12 +67,14 @@ def _copy_runtime_assets(config: dict, project: Path, staging: Path) -> None:
     source_dir = _path(deep_get(config, "stage1.source_dir", ""))
     if source_dir is None or not (source_dir / "model_helper.py").is_file():
         raise FileNotFoundError(f"YourMT3 source is missing: {source_dir}")
-    target_source = staging / "hpc_assets" / "stage1" / "sources" / "YourMT3"
+    target_source = staging / "third_party" / "YourMT3"
     shutil.copytree(
         source_dir,
         target_source,
         ignore=shutil.ignore_patterns(
-            ".git", "__pycache__", "*.pyc", "model_output", "wandb", "lightning_logs", "logs"
+            ".git", "__pycache__", "*.pyc", ".coverage", ".DS_Store",
+            "*.a2s_original", "model_output", "wandb", "lightning_logs",
+            "logs", "extras", "tests",
         ),
     )
     checkpoint = Path(str(deep_get(config, "stage1.checkpoint_path", "")))

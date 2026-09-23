@@ -1,0 +1,8 @@
+The vendored Hugging Face Space snapshot declares the Apache License 2.0 in its
+README metadata, and its source files retain their original license headers.
+The Apache License 2.0 terms are available at:
+
+https://www.apache.org/licenses/LICENSE-2.0
+
+The related GitHub repository declares GPL-3.0 instead. See UPSTREAM.md and the
+repository-root THIRD_PARTY_NOTICES.md for provenance and redistribution notes.

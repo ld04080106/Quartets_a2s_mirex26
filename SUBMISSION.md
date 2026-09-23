@@ -38,6 +38,13 @@ not abort the batch; a valid rest score is emitted and the exception is recorded
 in `OUTPUT_KERN_DIR/logs/failed_samples.csv`. A missing required model asset is
 a preflight error instead of silently producing an empty batch.
 
+If a required checkpoint is absent, `transcription.sh` invokes the checksum-
+pinned asset downloader before preflight. Public OSS URLs and verified SHA-256
+values are included in the final config; the six environment variables in the
+root README optionally select a mirror. Existing files are never downloaded
+again, but configured checksums are still verified. For authenticated HTTPS,
+set `A2S_ASSET_BEARER_TOKEN` without storing the token in the repository.
+
 ## Environment
 
 Python 3.11 and one CUDA GPU are expected. Install PyTorch/Torchaudio for the
@@ -45,6 +52,7 @@ host CUDA version first, then:
 
 ```bash
 python -m pip install -r requirements_submission.txt
+python scripts/ensure_model_assets.py --config configs/pipeline_submission.yaml
 python scripts/check_submission_assets.py --config configs/pipeline_submission.yaml
 ```
 

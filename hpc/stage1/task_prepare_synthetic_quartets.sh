@@ -35,7 +35,7 @@ LOG="outputs/yourmt3_synth_prepare_logs/task_${STAMP}.log"
     conda activate yourmt3
   fi
 
-  export YOURMT3_SOURCE_DIR="${YOURMT3_SOURCE_DIR:-hpc_assets/stage1/sources/YourMT3}"
+  export YOURMT3_SOURCE_DIR="${YOURMT3_SOURCE_DIR:-third_party/YourMT3}"
   export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
 
   echo "Python: $(command -v python)"

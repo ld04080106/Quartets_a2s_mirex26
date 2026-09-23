@@ -9,7 +9,7 @@ from pathlib import Path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="List YourMT3 checkpoints under a source snapshot.")
-    parser.add_argument("--source_dir", default=os.environ.get("YOURMT3_SOURCE_DIR", "hpc_assets/stage1/sources/YourMT3"))
+    parser.add_argument("--source_dir", default=os.environ.get("YOURMT3_SOURCE_DIR", "third_party/YourMT3"))
     parser.add_argument("--contains", default="quartets")
     parser.add_argument("--limit", type=int, default=30)
     args = parser.parse_args()

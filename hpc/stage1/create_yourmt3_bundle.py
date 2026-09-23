@@ -12,7 +12,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-EXCLUDED_PARTS = {".cache", "__pycache__", ".git", "model_output"}
+PINNED_REVISION = "5e66c1ea173a8186e0d20432b841d3180cc015b5"
+EXCLUDED_PARTS = {
+    ".cache", "__pycache__", ".git", "model_output", "logs", "checkpoints",
+    "lightning_logs", "wandb", "extras", "tests",
+}
+EXCLUDED_NAMES = {".coverage", ".DS_Store", "preprocess_rnsynth.py"}
 
 
 def sha256(path: Path) -> str:
@@ -44,7 +49,7 @@ def add_regular_file(archive: tarfile.TarFile, source: Path, name: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", default="YourMT3_bundle.tar.gz")
-    parser.add_argument("--revision", default="main")
+    parser.add_argument("--revision", default=PINNED_REVISION)
     parser.add_argument(
         "--download_dir", default="downloads/YourMT3",
         help="Hub cache root in cache mode, or snapshot destination in local_dir mode.",
@@ -109,7 +114,10 @@ def main() -> None:
         raise SystemExit(f"Incomplete YourMT3 snapshot: {source}")
     files = sorted(
         path for path in source.rglob("*")
-        if path.is_file() and not any(part in EXCLUDED_PARTS for part in path.relative_to(source).parts)
+        if path.is_file()
+        and path.name not in EXCLUDED_NAMES
+        and not path.name.endswith(".a2s_original")
+        and not any(part in EXCLUDED_PARTS for part in path.relative_to(source).parts)
     )
     if not files:
         raise SystemExit("No files selected for bundle")

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="${A2S_STAGE1_ROOT:-$PWD/hpc_assets/stage1}"
-SOURCE_DIR="${YOURMT3_SOURCE_DIR:-$ROOT/sources/YourMT3}"
+SOURCE_DIR="${YOURMT3_SOURCE_DIR:-$PWD/third_party/YourMT3}"
 ENV_PREFIX="${YOURMT3_ENV_PREFIX:-$ROOT/envs/yourmt3}"
 PYTHON_VERSION="${YOURMT3_PYTHON_VERSION:-3.10}"
 TORCH_INDEX_URL="${YOURMT3_TORCH_INDEX_URL:-https://download.pytorch.org/whl/cu121}"
