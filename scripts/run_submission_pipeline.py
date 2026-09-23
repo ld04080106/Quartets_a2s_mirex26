@@ -62,7 +62,7 @@ def _find_metadata(
     metadata_source: Path | None, sample_id: str, relative_audio: Path | None = None,
 ) -> ScoreMetadata:
     if metadata_source is None:
-        return ScoreMetadata()
+        raise FileNotFoundError("Staves-Informed metadata is required")
     if metadata_source.is_file():
         candidates = [metadata_source]
     else:
@@ -81,21 +81,30 @@ def _find_metadata(
         if not path.is_file():
             continue
         if path.suffix.lower() in {".krn", ".kern", ".txt"}:
-            return parse_kern_metadata(path)
-        if path.suffix.lower() == ".json":
+            metadata = parse_kern_metadata(path)
+        elif path.suffix.lower() == ".json":
             payload = json.loads(path.read_text(encoding="utf-8-sig"))
             header = payload.get("header") or payload.get("kern_header")
             if isinstance(header, list):
                 header = "\n".join(str(line) for line in header)
             if isinstance(header, str) and "**kern" in header:
-                return parse_kern_metadata(header)
-            return ScoreMetadata(
-                meter=str(payload.get("meter") or "4/4"),
-                key=str(payload.get("key") or payload.get("tonal_key") or "C major"),
-                key_signature=payload.get("key_signature"),
-                tempo_bpm=float(payload.get("tempo_bpm") or payload.get("tempo") or 120.0),
+                metadata = parse_kern_metadata(header)
+            else:
+                raise ValueError(
+                    f"metadata JSON for {sample_id!r} must contain a four-spine "
+                    "'header' or 'kern_header'"
+                )
+        else:
+            continue
+        if len(metadata.kern_indices) != 4 or not metadata.header_lines:
+            raise ValueError(
+                f"metadata for {sample_id!r} must contain a valid header with exactly "
+                f"four **kern spines: {path}"
             )
-    return ScoreMetadata()
+        return metadata
+    raise FileNotFoundError(
+        f"no Staves-Informed metadata found for sample {sample_id!r} under {metadata_source}"
+    )
 
 
 def _apply_metadata(sequence: NoteEventSequence, metadata: ScoreMetadata) -> NoteEventSequence:
@@ -262,8 +271,17 @@ def main() -> None:
     parser.add_argument("--config", default="configs/pipeline_submission.yaml")
     parser.add_argument("--input_audio_dir", required=True, help="Input audio file or directory (kept for wrapper compatibility).")
     parser.add_argument("--output_kern_dir", required=True)
-    parser.add_argument("--metadata_dir")
+    parser.add_argument(
+        "--metadata_dir",
+        required=True,
+        help="Required Staves-Informed header file or directory.",
+    )
     parser.add_argument("--limit", type=int)
+    parser.add_argument(
+        "--validate_inputs_only",
+        action="store_true",
+        help="Validate audio/metadata pairing without loading model checkpoints.",
+    )
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -289,6 +307,34 @@ def main() -> None:
         audio_paths = audio_paths[: args.limit]
     if not audio_paths:
         raise SystemExit(f"no supported audio files found under {input_path}")
+
+    if metadata_dir is None or not metadata_dir.exists():
+        raise SystemExit(f"Staves-Informed metadata path not found: {metadata_dir}")
+    if metadata_dir.is_file() and len(audio_paths) != 1:
+        raise SystemExit(
+            "a single metadata file may only be used with one input audio file; "
+            "provide a metadata directory for multiple inputs"
+        )
+    metadata_by_sample: dict[str, ScoreMetadata] = {}
+    metadata_errors: list[str] = []
+    for audio_path in audio_paths:
+        relative_audio = audio_path.relative_to(input_path) if input_path.is_dir() else None
+        try:
+            metadata_by_sample[audio_path.stem] = _find_metadata(
+                metadata_dir, audio_path.stem, relative_audio
+            )
+        except Exception as exc:
+            metadata_errors.append(f"{audio_path.stem}: {type(exc).__name__}: {exc}")
+    if metadata_errors:
+        details = "\n  - ".join(metadata_errors)
+        raise SystemExit(f"Staves-Informed metadata validation failed:\n  - {details}")
+    if args.validate_inputs_only:
+        logger.info(
+            "input validation passed: %d audio file(s), %d metadata header(s)",
+            len(audio_paths),
+            len(metadata_by_sample),
+        )
+        return
 
     failures: list[dict[str, str]] = []
     init_errors: list[str] = []
@@ -336,7 +382,7 @@ def main() -> None:
         relative_audio = None
         if input_path.is_dir():
             relative_audio = audio_path.relative_to(input_path)
-        metadata = _find_metadata(metadata_dir, sample_id, relative_audio)
+        metadata = metadata_by_sample[sample_id]
         final_text: str | None = None
         logger.info("processing %d/%d: %s", index, len(audio_paths), sample_id)
         stage_started = time.perf_counter()

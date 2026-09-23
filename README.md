@@ -146,6 +146,12 @@ export A2S_STAGE2_CHECKPOINT_SHA256=SHA256_OF_MIRRORED_FILE
 `transcription.sh` checks local files first, downloads only missing assets to a
 temporary file, verifies SHA-256, and atomically installs them. Use
 `A2S_ASSET_BEARER_TOKEN` only at runtime if the server requires authentication.
+On an interactive terminal it lists the missing files and their total size,
+then prompts `Download now? [Y/n]:`; press Enter or type `y` to continue. The
+download displays percentage, transferred bytes, and throughput. Batch jobs
+without an interactive stdin continue automatically. Set
+`A2S_ASSET_AUTO_CONFIRM=yes` (or pass `--yes` to the downloader) to approve
+explicitly, or set it to `no` to prohibit downloads.
 
 Validate and build:
 
@@ -158,8 +164,13 @@ bash hpc/submission/build_submission.sh
 Run the same public entry point used by the evaluator:
 
 ```bash
-bash transcription.sh INPUT_AUDIO_OR_DIR OUTPUT_KERN_DIR [METADATA_FILE_OR_DIR]
+bash transcription.sh INPUT_AUDIO_OR_DIR OUTPUT_KERN_DIR METADATA_FILE_OR_DIR
 ```
+
+This release supports Staves-Informed A2S only. Metadata is mandatory, and each
+input must resolve to a header containing exactly four `**kern` spines. The
+launcher exits with an error when the argument, path, matching sample metadata,
+or required spine header is missing.
 
 Then verify the one-audio/one-valid-kern contract:
 

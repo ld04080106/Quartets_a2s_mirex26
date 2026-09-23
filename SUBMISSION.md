@@ -1,10 +1,7 @@
 # MIREX 2026 Audio-to-Score submission
 
-This package implements both MIREX 2026 input modes:
-
-- Blind A2S: audio only.
-- Staves-Informed A2S: audio plus a file/directory containing the supplied
-  `**kern` header metadata.
+This package implements the MIREX 2026 **Staves-Informed A2S** task. Audio-only
+Blind A2S is intentionally not supported by this submission.
 
 Pipeline:
 
@@ -14,7 +11,7 @@ audio
   -> learned four-voice assignment
   -> long-context MIDI-to-MIDI correction Transformer
   -> deterministic quantization and **kern writer
-  -> supplied-header projection (staves-informed only)
+  -> supplied-header projection
   -> validation, repair, and legal fallback
 ```
 
@@ -23,14 +20,16 @@ audio
 From the package root:
 
 ```bash
-bash transcription.sh INPUT_AUDIO_OR_DIR OUTPUT_KERN_DIR [METADATA_FILE_OR_DIR]
+bash transcription.sh INPUT_AUDIO_OR_DIR OUTPUT_KERN_DIR METADATA_FILE_OR_DIR
 ```
 
 The input may be one FLAC/WAV file or a directory searched recursively. One
-`<audio-basename>.krn` is written per unique input basename. Metadata may be one
-header file or a directory whose files share the audio basenames. `.krn`,
-`.kern`, `.txt`, and `.json` metadata are supported. JSON may contain
-`header`/`kern_header`, or separate meter/key/tempo fields.
+`<audio-basename>.krn` is written per unique input basename. Metadata is
+required. It may be one header file for a single audio file, or a directory
+whose files share the audio basenames. `.krn`, `.kern`, `.txt`, and `.json`
+metadata are supported. JSON must contain `header` or `kern_header`. Every
+header must describe exactly four `**kern` spines; missing or malformed metadata
+terminates the run with an explicit error before model inference.
 
 The evaluator does not need to edit model paths. They are resolved relative to
 the package through `configs/pipeline_submission.yaml`. Per-sample exceptions do
@@ -44,6 +43,12 @@ values are included in the final config; the six environment variables in the
 root README optionally select a mirror. Existing files are never downloaded
 again, but configured checksums are still verified. For authenticated HTTPS,
 set `A2S_ASSET_BEARER_TOKEN` without storing the token in the repository.
+Interactive runs list missing assets and ask `Download now? [Y/n]:`; Enter and
+`y` both approve. Non-interactive evaluation jobs approve automatically so a
+batch submission cannot hang on stdin. Use `A2S_ASSET_AUTO_CONFIRM=yes|no` to
+override this behavior. Download percentage, byte counts, and throughput are
+printed to the terminal. Transcription then reports `processing i/N` while
+also appending the same output to `logs/launcher.log`.
 
 ## Environment
 
@@ -78,7 +83,8 @@ python scripts/check_submission_outputs.py \
 bash transcription.sh INPUT_AUDIO_DIR OUTPUT_FULL_DIR METADATA_DIR
 ```
 
-Omit `METADATA_DIR` for Blind A2S. Set `A2S_PYTHON=/path/to/python` if needed.
+Set `A2S_PYTHON=/path/to/python` if needed. The metadata argument cannot be
+omitted because this package is Staves-Informed only.
 For diagnostics, copy the config and set `pipeline.save_intermediates: true`.
 
 ## Package
